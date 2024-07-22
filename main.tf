@@ -14,7 +14,8 @@ module "container_service" {
   project_name       = "ar-sre-kata"
   vpc_id             = module.networking.vpc_id
   public_subnet_ids  = module.networking.public_subnet_ids
-  private_subnet_ids = [module.networking.redis_subnet_id]
+  private_subnet_ids = module.networking.private_subnet_ids
+  redis_subnet_id    = module.networking.redis_subnet_id
   redis_static_ip    = var.redis_static_ip
   tags = {
     Owner = "AR"

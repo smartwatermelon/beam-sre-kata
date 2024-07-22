@@ -90,20 +90,6 @@ resource "aws_ecs_task_definition" "app" {
   tags = var.tags
 }
 
-# Create a specific subnet for Redis
-resource "aws_subnet" "redis" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = var.redis_subnet_cidr
-  availability_zone = var.availability_zones[0]
-
-  tags = merge(
-    var.tags,
-    {
-      Name = "${var.project_name}-redis-subnet"
-    }
-  )
-}
-
 # Associate the Redis subnet with the private route table
 resource "aws_route_table_association" "redis" {
   subnet_id      = aws_subnet.redis.id
@@ -151,9 +137,9 @@ resource "aws_ecs_service" "app" {
   desired_count   = 1
 
   network_configuration {
-    subnets          = var.public_subnet_ids
-    security_groups  = [aws_security_group.app.id]
-    assign_public_ip = true
+    subnets          = [var.redis_subnet_id] # Use the provided Redis subnet ID
+    security_groups  = [aws_security_group.redis.id]
+    assign_public_ip = false
   }
 
   tags = var.tags
