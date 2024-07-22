@@ -14,6 +14,11 @@ output "private_subnet_ids" {
   value       = aws_subnet.private[*].id
 }
 
+output "redis_subnet_id" {
+  description = "ID of the Redis subnet"
+  value       = aws_subnet.redis.id
+}
+
 output "vpc_cidr_block" {
   description = "The CIDR block of the VPC"
   value       = aws_vpc.main.cidr_block

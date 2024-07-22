@@ -90,6 +90,26 @@ resource "aws_ecs_task_definition" "app" {
   tags = var.tags
 }
 
+# Create a specific subnet for Redis
+resource "aws_subnet" "redis" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.redis_subnet_cidr
+  availability_zone = var.availability_zones[0]
+
+  tags = merge(
+    var.tags,
+    {
+      Name = "${var.project_name}-redis-subnet"
+    }
+  )
+}
+
+# Associate the Redis subnet with the private route table
+resource "aws_route_table_association" "redis" {
+  subnet_id      = aws_subnet.redis.id
+  route_table_id = aws_route_table.private.id
+}
+
 # CloudWatch Log Group for Redis
 resource "aws_cloudwatch_log_group" "redis" {
   name              = "/ecs/${var.project_name}-redis"

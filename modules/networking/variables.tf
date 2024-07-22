@@ -29,6 +29,12 @@ variable "private_subnet_cidrs" {
   default     = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
 }
 
+variable "redis_subnet_cidr" {
+  description = "CIDR block for the Redis subnet"
+  type        = string
+  default     = "10.0.5.0/24"
+}
+
 variable "tags" {
   description = "Tags to be applied to all resources"
   type        = map(string)
