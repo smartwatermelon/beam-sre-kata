@@ -1,5 +1,9 @@
-docs
+# Ignore Terraform state files
+terraform.tfstate*
+.terraform/
+
+# Ignore documentation directory
+docs/
+
+# Ignore macOS directory index file
 .DS_Store
-.terraform
-terraform.tfstate
-terraform.tfstate.backup
