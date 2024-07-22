@@ -48,11 +48,6 @@ variable "redis_image" {
   default     = "redis:latest"
 }
 
-variable "redis_static_ip" {
-  description = "Static IP address for the Redis container"
-  type        = string
-}
-
 variable "redis_subnet_id" {
   description = "ID of the subnet where Redis will be deployed"
   type        = string
