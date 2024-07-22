@@ -21,8 +21,3 @@ module "container_service" {
     Owner = "AR"
   }
 }
-
-output "redis_private_ip" {
-  description = "Private IP of the Redis container"
-  value       = module.container_service.redis_private_ip
-}
