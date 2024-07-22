@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# ./entrypoint.sh
+
 # Function to get Redis IP from ECS task metadata
 get_redis_ip() {
     TASK_METADATA=$(curl -s "${ECS_CONTAINER_METADATA_URI_V4}/task")
