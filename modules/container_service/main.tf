@@ -73,7 +73,7 @@ resource "aws_ecs_task_definition" "app" {
       environment = [
         {
           name  = "REDIS_URL"
-          value = "redis://${var.project_name}-redis-service.${var.project_name}:${var.redis_port}"
+          value = "redis://${var.redis_static_ip}:${var.redis_port}"
         }
       ]
       logConfiguration = {
@@ -148,7 +148,7 @@ resource "aws_ecs_service" "redis" {
   desired_count   = 1
 
   network_configuration {
-    subnets          = var.private_subnet_ids
+    subnets          = [var.redis_subnet_id]
     security_groups  = [aws_security_group.redis.id]
     assign_public_ip = false
   }
