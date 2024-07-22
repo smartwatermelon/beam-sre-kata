@@ -1,3 +1,4 @@
+# ./variables.tf
 variable "redis_static_ip" {
   description = "Static IP address for the Redis container"
   type        = string
