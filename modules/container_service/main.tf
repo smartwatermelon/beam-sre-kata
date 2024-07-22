@@ -81,6 +81,13 @@ resource "aws_ecs_task_definition" "app" {
   tags = var.tags
 }
 
+# CloudWatch Log Group for Redis
+resource "aws_cloudwatch_log_group" "redis" {
+  name              = "/ecs/${var.project_name}-redis"
+  retention_in_days = 7
+  tags              = var.tags
+}
+
 # ECS Task Definition for Redis
 resource "aws_ecs_task_definition" "redis" {
   family                   = "${var.project_name}-redis"
@@ -99,11 +106,20 @@ resource "aws_ecs_task_definition" "redis" {
           hostPort      = var.redis_port
         }
       ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.redis.name
+          awslogs-region        = "us-east-2"
+          awslogs-stream-prefix = "redis"
+        }
+      }
     }
   ])
 
   tags = var.tags
 }
+
 
 # ECS Service for the web application
 resource "aws_ecs_service" "app" {
