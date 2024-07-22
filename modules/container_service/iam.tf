@@ -1,8 +1,12 @@
 # ./modules/container_service/iam.tf
 
+resource "random_id" "suffix" {
+  byte_length = 8
+}
+
 # IAM role for ECS task execution
-resource "aws_iam_role" "ecs_task_execution_role" {
-  name = "${var.project_name}-ecs-task-execution-role"
+resource "aws_iam_role" "ecs_task_execution_role_new" {
+  name = "ar-sre-kata-ecs-exec-role-${random_id.suffix.hex}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -21,36 +25,14 @@ resource "aws_iam_role" "ecs_task_execution_role" {
 }
 
 # Attach the AmazonECSTaskExecutionRolePolicy to the role
-resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
-  role       = aws_iam_role.ecs_task_execution_role.name
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy_new" {
+  role       = aws_iam_role.ecs_task_execution_role_new.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-# Add ECR permissions to the ECS task execution role
-resource "aws_iam_role_policy" "ecs_task_execution_ecr_policy" {
-  name = "${var.project_name}-ecs-task-execution-ecr-policy"
-  role = aws_iam_role.ecs_task_execution_role.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "ecr:GetAuthorizationToken",
-          "ecr:BatchCheckLayerAvailability",
-          "ecr:GetDownloadUrlForLayer",
-          "ecr:BatchGetImage"
-        ]
-        Resource = "*"
-      }
-    ]
-  })
-}
-
 # IAM role for ECS tasks
-resource "aws_iam_role" "ecs_task_role" {
-  name = "${var.project_name}-ecs-task-role"
+resource "aws_iam_role" "ecs_task_role_new" {
+  name = "ar-sre-kata-ecs-task-role-${random_id.suffix.hex}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -69,9 +51,9 @@ resource "aws_iam_role" "ecs_task_role" {
 }
 
 # Add permissions for ECS tasks to access the ECS Container Metadata
-resource "aws_iam_role_policy" "ecs_task_metadata_policy" {
-  name = "${var.project_name}-ecs-task-metadata-policy"
-  role = aws_iam_role.ecs_task_role.id
+resource "aws_iam_role_policy" "ecs_task_metadata_policy_new" {
+  name = "ar-sre-kata-ecs-metadata-policy-${random_id.suffix.hex}"
+  role = aws_iam_role.ecs_task_role_new.id
 
   policy = jsonencode({
     Version = "2012-10-17"
