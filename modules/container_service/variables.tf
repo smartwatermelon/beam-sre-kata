@@ -47,3 +47,8 @@ variable "redis_image" {
   type        = string
   default     = "redis:latest"
 }
+
+variable "redis_static_ip" {
+  description = "Static IP address for the Redis container"
+  type        = string
+}

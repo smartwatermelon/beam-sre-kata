@@ -58,8 +58,7 @@ resource "aws_ecs_task_definition" "app" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = "256"
   memory                   = "512"
-
-  execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
 
   container_definitions = jsonencode([
     {
@@ -74,7 +73,7 @@ resource "aws_ecs_task_definition" "app" {
       environment = [
         {
           name  = "REDIS_URL"
-          value = "redis://redis.${var.project_name}:${var.redis_port}"
+          value = "redis://${var.project_name}-redis-service.${var.project_name}:${var.redis_port}"
         }
       ]
       logConfiguration = {
@@ -105,8 +104,7 @@ resource "aws_ecs_task_definition" "redis" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = "256"
   memory                   = "512"
-
-  execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
 
   container_definitions = jsonencode([
     {
@@ -118,20 +116,11 @@ resource "aws_ecs_task_definition" "redis" {
           hostPort      = var.redis_port
         }
       ]
-      logConfiguration = {
-        logDriver = "awslogs"
-        options = {
-          awslogs-group         = aws_cloudwatch_log_group.redis.name
-          awslogs-region        = "us-east-2"
-          awslogs-stream-prefix = "redis"
-        }
-      }
     }
   ])
 
   tags = var.tags
 }
-
 
 # ECS Service for the web application
 resource "aws_ecs_service" "app" {
