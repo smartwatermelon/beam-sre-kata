@@ -42,7 +42,7 @@ aws sts get-caller-identity
 
 ## Step 3: Install Terraform
 
-Terraform is used for provisioning and managing your infrastructure.
+[Terraform](https://www.terraform.io/) is used for provisioning and managing your infrastructure.
 
 1. Install Terraform using Homebrew:
 
