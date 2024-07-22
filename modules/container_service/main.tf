@@ -73,7 +73,7 @@ resource "aws_ecs_task_definition" "app" {
       environment = [
         {
           name  = "REDIS_URL"
-          value = "redis://${aws_ecs_task_definition.redis.network_configuration[0].private_ip_address}:6379"
+          value = "redis://${var.redis_static_ip}:6379"
         }
       ]
       logConfiguration = {
