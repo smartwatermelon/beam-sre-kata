@@ -12,8 +12,8 @@ resource "aws_security_group" "app" {
   vpc_id      = var.vpc_id
 
   ingress {
-    from_port   = var.app_port
-    to_port     = var.app_port
+    from_port   = 4567
+    to_port     = 4567
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -35,8 +35,8 @@ resource "aws_security_group" "redis" {
   vpc_id      = var.vpc_id
 
   ingress {
-    from_port       = var.redis_port
-    to_port         = var.redis_port
+    from_port       = 6379
+    to_port         = 6379
     protocol        = "tcp"
     security_groups = [aws_security_group.app.id]
   }
@@ -63,17 +63,17 @@ resource "aws_ecs_task_definition" "app" {
   container_definitions = jsonencode([
     {
       name  = "app"
-      image = var.app_image
+      image = "beamdental/sre-kata-app"
       portMappings = [
         {
-          containerPort = var.app_port
-          hostPort      = var.app_port
+          containerPort = 4567
+          hostPort      = 4567
         }
       ]
       environment = [
         {
           name  = "REDIS_URL"
-          value = "redis://${var.redis_static_ip}:${var.redis_port}"
+          value = "redis://${var.redis_static_ip}:6379"
         }
       ]
       logConfiguration = {
@@ -131,9 +131,9 @@ resource "aws_ecs_service" "app" {
   desired_count   = 1
 
   network_configuration {
-    subnets          = [var.redis_subnet_id] # Use the provided Redis subnet ID
-    security_groups  = [aws_security_group.redis.id]
-    assign_public_ip = false
+    subnets          = var.public_subnet_ids
+    security_groups  = [aws_security_group.app.id]
+    assign_public_ip = true
   }
 
   tags = var.tags
@@ -158,6 +158,6 @@ resource "aws_ecs_service" "redis" {
 
 resource "aws_cloudwatch_log_group" "app" {
   name              = "/ecs/${var.project_name}-app"
-  retention_in_days = 7
+  retention_in_days = 14
   tags              = var.tags
 }
