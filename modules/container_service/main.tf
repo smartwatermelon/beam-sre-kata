@@ -1,30 +1,5 @@
 # ./modules/container_service/main.tf
 
-# Create ECR repository
-resource "aws_ecr_repository" "app" {
-  name = "${var.project_name}-app"
-  tags = var.tags
-}
-
-# Build and push Docker image
-resource "null_resource" "build_and_push_image" {
-  triggers = {
-    dockerfile_hash = filemd5("${path.root}/Dockerfile")
-    script_hash     = filemd5("${path.root}/app_scripts/entrypoint.sh")
-  }
-
-  provisioner "local-exec" {
-    command = <<EOF
-      aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin ${aws_ecr_repository.app.repository_url}
-      docker build -t ${var.project_name}-app ${path.root}
-      docker tag ${var.project_name}-app:latest ${aws_ecr_repository.app.repository_url}:latest
-      docker push ${aws_ecr_repository.app.repository_url}:latest
-    EOF
-  }
-
-  depends_on = [aws_ecr_repository.app]
-}
-
 # Create ECS Cluster
 resource "aws_ecs_cluster" "main" {
   name = "${var.project_name}-cluster"
@@ -90,7 +65,7 @@ resource "aws_ecs_task_definition" "app_and_redis" {
   container_definitions = jsonencode([
     {
       name  = "app"
-      image = "${aws_ecr_repository.app.repository_url}:latest"
+      image = "beamdental/sre-kata-app"
       portMappings = [
         {
           containerPort = var.app_port
@@ -101,6 +76,10 @@ resource "aws_ecs_task_definition" "app_and_redis" {
         {
           name  = "ECS_CONTAINER_METADATA_URI_V4"
           value = "http://169.254.170.2/v4"
+        },
+        {
+          name  = "REDIS_URL"
+          value = "redis://localhost:6379"
         }
       ]
       logConfiguration = {
@@ -133,8 +112,6 @@ resource "aws_ecs_task_definition" "app_and_redis" {
   ])
 
   tags = var.tags
-
-  depends_on = [null_resource.build_and_push_image]
 }
 
 # ECS Service for the web application and Redis
