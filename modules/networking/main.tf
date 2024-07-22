@@ -25,6 +25,27 @@ resource "aws_internet_gateway" "main" {
   )
 }
 
+# Elastic IP for NAT Gateway
+resource "aws_eip" "nat" {
+  vpc   = true
+  count = 1
+  tags  = merge(var.tags, { Name = "${var.project_name}-nat-eip" })
+}
+
+# NAT Gateway
+resource "aws_nat_gateway" "main" {
+  allocation_id = aws_eip.nat[0].id
+  subnet_id     = aws_subnet.public[0].id
+  tags          = merge(var.tags, { Name = "${var.project_name}-nat-gateway" })
+}
+
+# Update private route table to route through NAT Gateway
+resource "aws_route" "private_nat_gateway" {
+  route_table_id         = aws_route_table.private.id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.main.id
+}
+
 # Create public subnets
 resource "aws_subnet" "public" {
   count                   = length(var.public_subnet_cidrs)

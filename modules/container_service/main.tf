@@ -59,6 +59,8 @@ resource "aws_ecs_task_definition" "app" {
   cpu                      = "256"
   memory                   = "512"
 
+  execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
+
   container_definitions = jsonencode([
     {
       name  = "app"
@@ -75,6 +77,14 @@ resource "aws_ecs_task_definition" "app" {
           value = "redis://redis.${var.project_name}:${var.redis_port}"
         }
       ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.app.name
+          awslogs-region        = "us-east-2"
+          awslogs-stream-prefix = "app"
+        }
+      }
     }
   ])
 
@@ -95,6 +105,8 @@ resource "aws_ecs_task_definition" "redis" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = "256"
   memory                   = "512"
+
+  execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
 
   container_definitions = jsonencode([
     {
@@ -153,4 +165,10 @@ resource "aws_ecs_service" "redis" {
   }
 
   tags = var.tags
+}
+
+resource "aws_cloudwatch_log_group" "app" {
+  name              = "/ecs/${var.project_name}-app"
+  retention_in_days = 7
+  tags              = var.tags
 }
