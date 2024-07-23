@@ -1,8 +1,10 @@
 # modules/serverless/lambda/test_lambda.rb
+require 'bundler/setup'
 require 'minitest'
 require_relative 'index'
 
 class TestLambda < Minitest::Test
+
   def test_fetch_breweries
     config = { 'api_url' => 'https://api.openbrewerydb.org/v1/breweries', 'city' => 'Columbus', 'state' => 'Ohio', 'per_page' => 50 }
     breweries = fetch_breweries(config)
