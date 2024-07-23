@@ -56,6 +56,8 @@ resource "aws_lambda_function" "ar_test_runner" {
   handler          = "test_runner.handler"
   runtime          = "ruby3.3"
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
+  timeout          = 30  # Increase timeout to 30 seconds
+  memory_size      = 256 # Increase memory to 256 MB
 
   environment {
     variables = {
