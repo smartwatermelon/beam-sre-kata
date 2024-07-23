@@ -8,5 +8,9 @@ docs/
 # Ignore macOS directory index file
 .DS_Store
 
-# Ignore lambda function archive
+# Ignore lambda function archives
 modules/serverless/lambda_function.zip
+modules/serverless/lambda_layer.zip
+
+# Ignore Bundler state
+modules/serverless/lambda_layer/ruby/gems/.bundle/
