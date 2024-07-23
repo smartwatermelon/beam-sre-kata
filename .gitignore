@@ -10,7 +10,6 @@ docs/
 
 # Ignore lambda function archives
 modules/serverless/lambda_function.zip
-modules/serverless/lambda_layer.zip
 
 # Ignore Ruby and Bundler state
 modules/serverless/lambda_layer/ruby/gems/.bundle/
