@@ -3,6 +3,7 @@
 require 'bundler/setup'
 require 'minitest'
 require 'json'
+require 'ostruct'
 require_relative 'index'
 
 class TestLambda < Minitest::Test
@@ -71,6 +72,18 @@ class TestLambda < Minitest::Test
       rescue Minitest::Assertion => e
         result[:success] = false
         result[:failures] << { test: method, message: e.message }
+      rescue StandardError => e
+        result[:success] = false
+        result[:failures] << { test: method, message: "Error: #{e.class} - #{e.message}" }
+      end
+    end
+
+    if result[:success]
+      puts "All tests passed successfully!"
+    else
+      puts "Test failures:"
+      result[:failures].each do |failure|
+        puts "  #{failure[:test]}: #{failure[:message]}"
       end
     end
 

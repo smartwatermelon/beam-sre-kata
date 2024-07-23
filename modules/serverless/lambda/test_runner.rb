@@ -1,4 +1,4 @@
-# modules/serverless/lambda/test_runner.rb
+# ./modules/serverless/lambda/test_runner.rb
 
 puts "Starting test_runner.rb"
 puts "Ruby version: #{RUBY_VERSION}"
@@ -23,10 +23,17 @@ def handler(event:, context:)
     test_result = TestLambda.run_tests
     puts JSON.generate(test_result)
 
-    {
-      statusCode: test_result[:success] ? 200 : 500,
-      body: JSON.generate(test_result)
-    }
+    if test_result[:success]
+      {
+        statusCode: 200,
+        body: JSON.generate(test_result)
+      }
+    else
+      {
+        statusCode: 500,
+        body: JSON.generate(test_result)
+      }
+    end
   rescue => e
     puts "Error: #{e.message}"
     puts e.backtrace.join("\n")
