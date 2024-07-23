@@ -8,7 +8,6 @@ puts "Contents of /var/task: #{Dir.entries('/var/task')}"
 puts "Contents of /var/task/vendor/bundle: #{Dir.entries('/var/task/vendor/bundle')}"
 puts "ENV variables: #{ENV.to_h}"
 
-require 'json'
 require 'bundler/setup'
 require_relative 'test_lambda'
 
@@ -18,7 +17,6 @@ def handler(event:, context:)
   puts "GEM_PATH: #{ENV['GEM_PATH']}"
   puts "LOAD_PATH: #{$LOAD_PATH}"
   puts "Bundler.bundle_path: #{Bundler.bundle_path}"
-  puts "Bundler.rubygems.find_name('json'): #{Bundler.rubygems.find_name('json')}"
   puts "Installed gems: #{Gem.loaded_specs.keys}"
 
   begin

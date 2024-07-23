@@ -3,15 +3,15 @@
 # Create a null resource to install gems
 resource "null_resource" "install_gems" {
   triggers = {
-    gemfile_hash = filemd5("${path.module}/lambda/Gemfile")
+    always_run = "${timestamp()}"
   }
 
   provisioner "local-exec" {
     command = <<EOF
       cd ${path.module}/lambda
       bundle config set path 'vendor/bundle'
-      bundle config set without 'development test'
       bundle install
+      bundle lock --add-platform ruby
     EOF
   }
 }
