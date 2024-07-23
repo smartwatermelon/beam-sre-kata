@@ -7,3 +7,6 @@ docs/
 
 # Ignore macOS directory index file
 .DS_Store
+
+# Ignore lambda function archive
+modules/serverless/lambda_function.zip
