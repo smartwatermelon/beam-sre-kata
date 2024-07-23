@@ -1,5 +1,5 @@
 # modules/serverless/lambda/test_lambda.rb
-require 'minitest/test'
+require 'minitest'
 require_relative 'index'
 
 class TestLambda < Minitest::Test

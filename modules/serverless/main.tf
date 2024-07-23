@@ -38,12 +38,12 @@ resource "null_resource" "install_gems" {
 
   provisioner "local-exec" {
     command = <<EOF
-      pushd ${path.module}/lambda_layer/ruby/gems
-      bundle config set path '.'
+      mkdir -p ${path.module}/lambda_layer/ruby/gems
+      cd ${path.module}/lambda_layer/ruby/gems
+      bundle config set path 'vendor/bundle'
       bundle install
-      popd
       cd ${path.module}
-      zip -qr lambda_layer.zip lambda_layer
+      zip -r lambda_layer.zip lambda_layer
       echo "ZIP file creation complete"
     EOF
   }
@@ -54,6 +54,7 @@ resource "aws_lambda_layer_version" "gems_layer" {
   filename            = "${path.module}/lambda_layer.zip"
   layer_name          = "ar-gems-layer"
   compatible_runtimes = ["ruby3.3"]
+  source_code_hash    = filebase64sha256("${path.module}/lambda_layer.zip")
 
   depends_on = [null_resource.install_gems]
 }
@@ -80,8 +81,15 @@ resource "aws_lambda_function" "ar_test_runner" {
 
   layers = [aws_lambda_layer_version.gems_layer.arn]
 
+  environment {
+    variables = {
+      GEM_PATH = "/opt/ruby/gems/3.3.0"
+    }
+  }
+
   tags = var.tags
 }
+
 
 # IAM policy for EventBridge permissions
 resource "aws_iam_role_policy" "eventbridge_permissions" {
