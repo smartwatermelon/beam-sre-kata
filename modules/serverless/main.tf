@@ -109,6 +109,9 @@ resource "aws_iam_role_policy" "eventbridge_permissions" {
   })
 }
 
+/*
+IAM user doesn't have necessary permissions
+
 # EventBridge rule to run tests periodically
 resource "aws_cloudwatch_event_rule" "test_schedule" {
   name                = "ar-run-tests-periodically"
@@ -131,6 +134,7 @@ resource "aws_lambda_permission" "allow_eventbridge" {
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.test_schedule.arn
 }
+*/
 
 # Brewery Lambda function resource
 resource "aws_lambda_function" "ar_brewery_function" {

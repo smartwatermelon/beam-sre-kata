@@ -2,5 +2,5 @@
         gem 'minitest'
       EOG
       bundle install --path .
-      cd ../../../
+      cd modules/serverless
       zip -r lambda_layer.zip lambda_layer
