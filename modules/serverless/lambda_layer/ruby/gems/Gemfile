@@ -1,0 +1,6 @@
+        source 'https://rubygems.org'
+        gem 'minitest'
+      EOG
+      bundle install --path .
+      cd ../../../
+      zip -r lambda_layer.zip lambda_layer

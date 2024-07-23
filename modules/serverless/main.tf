@@ -46,7 +46,7 @@ resource "null_resource" "install_gems" {
         gem 'minitest'
       EOG
       bundle install --path .
-      cd ../../../
+      cd ${path.module}
       zip -r lambda_layer.zip lambda_layer
     EOF
   }
@@ -85,6 +85,28 @@ resource "aws_lambda_function" "ar_test_runner" {
   layers = [aws_lambda_layer_version.gems_layer.arn]
 
   tags = var.tags
+}
+
+# IAM policy for EventBridge permissions
+resource "aws_iam_role_policy" "eventbridge_permissions" {
+  name = "ar-eventbridge-permissions"
+  role = aws_iam_role.ar_lambda_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "events:PutRule",
+          "events:PutTargets",
+          "events:DeleteRule",
+          "events:RemoveTargets"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      }
+    ]
+  })
 }
 
 # EventBridge rule to run tests periodically
