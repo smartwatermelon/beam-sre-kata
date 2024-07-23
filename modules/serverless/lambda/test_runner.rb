@@ -9,6 +9,7 @@ puts "Contents of /var/task/vendor/bundle: #{Dir.entries('/var/task/vendor/bundl
 puts "ENV variables: #{ENV.to_h}"
 
 require 'bundler/setup'
+require 'minitest/autorun'
 require_relative 'test_lambda'
 
 def handler(event:, context:)

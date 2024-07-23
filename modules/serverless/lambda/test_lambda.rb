@@ -1,30 +1,39 @@
 # ./modules/serverless/lambda/test_lambda.rb
 
 require 'bundler/setup'
-require 'minitest'
+require 'minitest/autorun'
+require 'minitest/mock'
 require 'json'
 require 'ostruct'
 require_relative 'index'
 
 class TestLambda < Minitest::Test
   def setup
-    # Mock the File.read method to return a sample config
-    File.stub :read, '{"api_url":"https://test.api","city":"TestCity","state":"TestState","per_page":10}' do
-      @config = load_config
-    end
+    @config = {
+      'api_url' => 'https://test.api',
+      'city' => 'TestCity',
+      'state' => 'TestState',
+      'per_page' => 10
+    }
   end
 
   def test_load_config
-    assert_equal 'https://test.api', @config['api_url']
-    assert_equal 'TestCity', @config['city']
-    assert_equal 'TestState', @config['state']
-    assert_equal 10, @config['per_page']
+    File.stub :read, JSON.generate(@config) do
+      config = load_config
+      assert_equal 'https://test.api', config['api_url']
+      assert_equal 'TestCity', config['city']
+      assert_equal 'TestState', config['state']
+      assert_equal 10, config['per_page']
+    end
   end
 
   def test_fetch_breweries
-    # Mock Net::HTTP to return a sample response
-    mock_response = '{"name":"Test Brewery","city":"TestCity","state":"TestState"}'
-    Net::HTTP.stub :get_response, OpenStruct.new(body: mock_response, code: '200') do
+    mock_response = OpenStruct.new(
+      body: JSON.generate([{ 'name' => 'Test Brewery', 'city' => 'TestCity', 'state' => 'TestState' }]),
+      code: '200'
+    )
+    
+    Net::HTTP.stub :get_response, mock_response do
       breweries = fetch_breweries(@config)
       assert_instance_of Array, breweries
       refute_empty breweries
@@ -48,15 +57,19 @@ class TestLambda < Minitest::Test
     event = {}
     context = nil
     
-    # Mock the necessary methods
-    File.stub :read, '{"api_url":"https://test.api","city":"TestCity","state":"TestState","per_page":10}' do
-      Net::HTTP.stub :get_response, OpenStruct.new(body: '[{"name":"Test Brewery","city":"TestCity","state":"TestState","street":"Test St","phone":"1234567890"}]', code: '200') do
+    mock_response = OpenStruct.new(
+      body: JSON.generate([{ 'name' => 'Test Brewery', 'city' => 'TestCity', 'state' => 'TestState', 'street' => 'Test St', 'phone' => '1234567890' }]),
+      code: '200'
+    )
+    
+    File.stub :read, JSON.generate(@config) do
+      Net::HTTP.stub :get_response, mock_response do
         result = handler(event: event, context: context)
         assert_equal 200, result[:statusCode]
         body = JSON.parse(result[:body])
         assert_instance_of Array, body
         assert_equal 1, body.length
-        assert_equal 'Test Brewery', body[0]['name']
+        assert_equal 'Test Brewery', body[0][:name]
       end
     end
   end
