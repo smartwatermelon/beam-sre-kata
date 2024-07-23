@@ -39,15 +39,11 @@ resource "null_resource" "install_gems" {
 
   provisioner "local-exec" {
     command = <<EOF
-      set -x
       pushd ${path.module}/lambda_layer/ruby/gems
       bundle install --path .
       popd
       cd ${path.module}
-      pwd
-      ls -la
       zip -r lambda_layer.zip lambda_layer
-      ls -la
       echo "ZIP file creation complete"
     EOF
   }
