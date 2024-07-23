@@ -39,6 +39,7 @@ resource "null_resource" "install_gems" {
 
   provisioner "local-exec" {
     command = <<EOF
+      set -x
       mkdir -p ${path.module}/lambda_layer/ruby/gems
       cd ${path.module}/lambda_layer/ruby/gems
       cat << EOG > Gemfile
@@ -47,16 +48,19 @@ resource "null_resource" "install_gems" {
       EOG
       bundle install --path .
       cd ${path.module}
+      pwd
+      ls -la
       zip -r lambda_layer.zip lambda_layer
+      ls -la
+      echo "ZIP file creation complete"
     EOF
   }
 }
 
-# Create Lambda Layer with installed gems
+# Lambda Layer resource
 resource "aws_lambda_layer_version" "gems_layer" {
-  filename   = "${path.module}/lambda_layer.zip"
-  layer_name = "ar-gems-layer"
-
+  filename            = "${path.module}/lambda_layer.zip"
+  layer_name          = "ar-gems-layer"
   compatible_runtimes = ["ruby3.3"]
 
   depends_on = [null_resource.install_gems]
