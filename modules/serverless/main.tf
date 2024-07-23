@@ -37,7 +37,7 @@ resource "aws_lambda_function" "ar_brewery_function" {
   function_name = "AR-BreweryParser"
   role          = aws_iam_role.ar_lambda_role.arn
   handler       = "index.handler"
-  runtime       = "ruby2.7"
+  runtime       = "ruby3.3"
 
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
 
