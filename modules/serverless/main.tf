@@ -31,10 +31,9 @@ resource "aws_iam_role_policy_attachment" "ar_lambda_basic_execution" {
   role       = aws_iam_role.ar_lambda_role.name
 }
 
-# Create a null resource to install gems and create a layer
 resource "null_resource" "install_gems" {
   triggers = {
-    always_run = "${timestamp()}"
+    gemfile_hash = filemd5("${path.module}/lambda_layer/ruby/gems/Gemfile")
   }
 
   provisioner "local-exec" {

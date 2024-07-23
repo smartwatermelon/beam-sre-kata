@@ -1,6 +1,5 @@
 # modules/serverless/lambda/test_lambda.rb
-
-require 'minitest/autorun'
+require 'minitest/test'
 require_relative 'index'
 
 class TestLambda < Minitest::Test
@@ -24,15 +23,19 @@ class TestLambda < Minitest::Test
   end
 
   def self.run_tests
+    test_methods = public_instance_methods(false).grep(/^test_/)
     result = { success: true, failures: [] }
-    self.runnable_methods.each do |method_name|
+
+    test_methods.each do |method|
       begin
-        self.new(method_name).run
+        test_instance = new(method)
+        test_instance.send(method)
       rescue Minitest::Assertion => e
         result[:success] = false
-        result[:failures] << { test: method_name, message: e.message }
+        result[:failures] << { test: method, message: e.message }
       end
     end
+
     result
   end
 end
