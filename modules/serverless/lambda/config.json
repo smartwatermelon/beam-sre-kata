@@ -1,0 +1,6 @@
+{
+  "api_url": "https://api.openbrewerydb.org/v1/breweries",
+  "city": "Columbus",
+  "state": "Ohio",
+  "per_page": 50
+}
