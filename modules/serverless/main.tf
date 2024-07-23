@@ -40,13 +40,9 @@ resource "null_resource" "install_gems" {
   provisioner "local-exec" {
     command = <<EOF
       set -x
-      mkdir -p ${path.module}/lambda_layer/ruby/gems
-      cd ${path.module}/lambda_layer/ruby/gems
-      cat << EOG > Gemfile
-        source 'https://rubygems.org'
-        gem 'minitest'
-      EOG
+      pushd ${path.module}/lambda_layer/ruby/gems
       bundle install --path .
+      popd
       cd ${path.module}
       pwd
       ls -la

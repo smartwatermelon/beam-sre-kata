@@ -1,6 +1,2 @@
-        source 'https://rubygems.org'
-        gem 'minitest'
-      EOG
-      bundle install --path .
-      cd modules/serverless
-      zip -r lambda_layer.zip lambda_layer
+source 'https://rubygems.org'
+gem 'minitest'
