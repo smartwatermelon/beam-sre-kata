@@ -10,7 +10,8 @@ resource "null_resource" "install_gems" {
     command = <<EOF
       cd ${path.module}/lambda
       bundle config set path 'vendor/bundle'
-      bundle install --without development test
+      bundle config set without 'development test'
+      bundle install
     EOF
   }
 }
