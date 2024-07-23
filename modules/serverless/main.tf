@@ -7,6 +7,30 @@ data "archive_file" "lambda_zip" {
   output_path = "${path.module}/lambda_function.zip"
 }
 
+# IAM role for Lambda execution
+resource "aws_iam_role" "ar_lambda_role" {
+  name = "AR-LambdaExecutionRole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = {
+        Service = "lambda.amazonaws.com"
+      }
+    }]
+  })
+
+  tags = var.tags
+}
+
+# IAM policy for Lambda basic execution
+resource "aws_iam_role_policy_attachment" "ar_lambda_basic_execution" {
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  role       = aws_iam_role.ar_lambda_role.name
+}
+
 # Lambda function resource
 resource "aws_lambda_function" "ar_brewery_function" {
   filename      = data.archive_file.lambda_zip.output_path
@@ -26,6 +50,3 @@ resource "aws_cloudwatch_log_group" "ar_lambda_log_group" {
   retention_in_days = 14
   tags              = var.tags
 }
-
-# TODO: Add IAM role resource for Lambda execution
-# TODO: Add IAM policy resources for Lambda execution and CloudWatch logging
