@@ -1,4 +1,4 @@
-# modules/serverless/variables.tf
+# ./modules/serverless/variables.tf
 
 variable "tags" {
   description = "Tags to be applied to all resources"

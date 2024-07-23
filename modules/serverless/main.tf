@@ -1,4 +1,4 @@
-# modules/serverless/main.tf
+# ./modules/serverless/main.tf
 
 # Create a null resource to install gems
 resource "null_resource" "install_gems" {
