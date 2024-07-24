@@ -1,7 +1,9 @@
 # modules/serverless/lambda/test_runner.rb
+
 require 'json'
 require_relative 'test_lambda'
 
+# Lambda function handler for running tests
 def handler(event:, context:)
   puts "Starting tests..."
   

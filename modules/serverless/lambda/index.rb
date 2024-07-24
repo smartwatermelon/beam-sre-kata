@@ -4,10 +4,12 @@ require 'json'
 require 'net/http'
 require 'uri'
 
+# Load configuration from JSON file
 def load_config
   JSON.parse(File.read('config.json'))
 end
 
+# Fetch breweries data from the API
 def fetch_breweries(config)
   uri = URI(config['api_url'])
   params = {
@@ -23,6 +25,7 @@ def fetch_breweries(config)
   JSON.parse(response.body)
 end
 
+# Format brewery data for output
 def format_brewery_data(breweries)
   breweries.map do |brewery|
     {
@@ -33,6 +36,7 @@ def format_brewery_data(breweries)
   end.sort_by { |brewery| brewery[:name] }
 end
 
+# Lambda function handler
 def handler(event:, context:)
   config = load_config
   breweries = fetch_breweries(config)

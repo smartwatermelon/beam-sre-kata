@@ -1,5 +1,6 @@
 # ./modules/container_service/iam.tf
 
+# Generate a random suffix for IAM role names
 resource "terraform_data" "random_suffix" {
   input = formatdate("YYYYMMDDhhmmss", timestamp())
 }

@@ -1,4 +1,6 @@
 # ./main.tf
+
+# Networking module for VPC and subnet configuration
 module "networking" {
   source = "./modules/networking"
 
@@ -8,6 +10,7 @@ module "networking" {
   }
 }
 
+# Container service module for ECS and related resources
 module "container_service" {
   source = "./modules/container_service"
 
@@ -21,6 +24,7 @@ module "container_service" {
   }
 }
 
+# Serverless module for Lambda functions and related resources
 module "serverless" {
   source = "./modules/serverless"
 
