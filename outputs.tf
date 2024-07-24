@@ -1,6 +1,6 @@
 # ./outputs.tf
 
-# Networking
+# Networking outputs
 output "vpc_id" {
   description = "The ID of the VPC"
   value       = module.networking.vpc_id
@@ -16,10 +16,20 @@ output "private_subnet_ids" {
   value       = module.networking.private_subnet_ids
 }
 
-# Container Service
+output "redis_subnet_id" {
+  description = "ID of the Redis subnet"
+  value       = module.networking.redis_subnet_id
+}
+
+# Container Service outputs
 output "ecs_cluster_arn" {
   description = "ARN of the ECS cluster"
   value       = module.container_service.ecs_cluster_arn
+}
+
+output "ecs_cluster_name" {
+  description = "Name of the ECS cluster"
+  value       = module.container_service.ecs_cluster_name
 }
 
 output "ecs_service_name" {
@@ -32,7 +42,7 @@ output "alb_dns_name" {
   value       = module.container_service.alb_dns_name
 }
 
-# Serverless
+# Serverless outputs
 output "lambda_function_name" {
   description = "Name of the Lambda function"
   value       = module.serverless.lambda_function_name

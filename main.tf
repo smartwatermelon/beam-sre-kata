@@ -28,28 +28,3 @@ module "serverless" {
     Owner = "AR"
   }
 }
-
-output "alb_dns_name" {
-  description = "The DNS name of the Application Load Balancer"
-  value       = module.container_service.alb_dns_name
-}
-
-output "ecs_cluster_name" {
-  description = "The name of the ECS cluster"
-  value       = module.container_service.ecs_cluster_name
-}
-
-output "ecs_service_name" {
-  description = "The name of the ECS service"
-  value       = module.container_service.ecs_service_name
-}
-
-output "lambda_function_name" {
-  description = "The name of the Lambda function"
-  value       = module.serverless.lambda_function_name
-}
-
-output "lambda_function_arn" {
-  description = "The ARN of the Lambda function"
-  value       = module.serverless.lambda_function_arn
-}
