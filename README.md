@@ -82,22 +82,22 @@ The AWS CLI tool will allow you to interact with AWS services from the command l
 	brew install git
 	```
 
-2. Clone the repository using SSH (recommended) or HTTPS. Replace `YOUR-REPO-URL` with your actual repository URL:
+2. Clone the repository using SSH (recommended) or HTTPS:
 
 	```bash
-	git clone git@github.com:YOUR-USERNAME/YOUR-REPO-NAME.git
+	git clone git@github.com:smartwatermelon/beam-sre-kata.git
 	```
 
 	Or using HTTPS:
 
 	```bash
-	git clone https://github.com/YOUR-USERNAME/YOUR-REPO-NAME.git
+	git clone https://github.com/smartwatermelon/beam-sre-kata.git
 	```
 
 	After cloning the repository, you'll find the following structure:
 	
 	```
-	ar-sre-kata/
+	beam-sre-kata/
 	├── modules/
 	│   ├── container_service/
 	│   ├── networking/
@@ -120,7 +120,7 @@ The AWS CLI tool will allow you to interact with AWS services from the command l
 1. Navigate to the cloned repository directory:
 
 	```bash
-	cd YOUR-REPO-NAME
+	cd beam-sre-kata
 	```
 
 2. Initialize Terraform:
@@ -157,7 +157,7 @@ To test the deployed application:
 1. After the Terraform apply completes, note the ALB DNS name from the output:
 
 	```bash
-	alb_dns_name = "ar-sre-kata-alb-RESOURCE_ID.us-east-2.elb.amazonaws.com"
+	alb_dns_name = "RESOURCE_NAME.us-east-2.elb.amazonaws.com"
 	```
 
 2. Open a web browser and navigate to the ALB DNS name. Click through the insecure warning since we have not implemented HTTPS for this demonstration.
