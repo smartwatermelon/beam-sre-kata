@@ -1,4 +1,4 @@
-# modules/serverless/outputs.tf
+# ./modules/serverless/outputs.tf
 
 output "lambda_function_name" {
   description = "The name of the Lambda function"

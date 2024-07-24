@@ -1,4 +1,4 @@
-# modules/serverless/lambda/index.rb
+# ./modules/serverless/lambda/index.rb
 
 require 'json'
 require 'net/http'
@@ -17,22 +17,10 @@ def fetch_breweries(config)
   }
   uri.query = URI.encode_www_form(params)
 
-  breweries = []
-  page = 1
+  response = Net::HTTP.get_response(uri)
+  return [] unless response.is_a?(Net::HTTPSuccess)
 
-  loop do
-    response = Net::HTTP.get_response(uri)
-    break unless response.is_a?(Net::HTTPSuccess)
-
-    page_breweries = JSON.parse(response.body)
-    break if page_breweries.empty?
-
-    breweries.concat(page_breweries)
-    page += 1
-    uri.query = URI.encode_www_form(params.merge(page: page))
-  end
-
-  breweries
+  JSON.parse(response.body)
 end
 
 def format_brewery_data(breweries)
@@ -50,6 +38,7 @@ def handler(event:, context:)
   breweries = fetch_breweries(config)
   formatted_data = format_brewery_data(breweries)
 
+  # Log the formatted data to CloudWatch
   puts JSON.generate(formatted_data)
 
   { statusCode: 200, body: JSON.generate(formatted_data) }
