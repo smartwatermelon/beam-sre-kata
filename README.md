@@ -3,6 +3,9 @@
 
 This document provides step-by-step instructions to prepare your Mac, clone the repository, and deploy the application using Terraform.
 
+## Introduction
+This SRE Kata Task demonstrates the implementation of a containerized web application and a serverless function using AWS services. The project showcases skills in infrastructure as code (IaC) using Terraform, containerization with ECS, and serverless computing with Lambda.
+
 ## Prerequisites
 
 - Homebrew (package manager for macOS)
@@ -57,7 +60,7 @@ The AWS CLI tool will allow you to interact with AWS services from the command l
 	terraform -version
 	```
 
-## Step 4: Clone the Private GitHub Repository
+## Step 4: Clone the private GitHub repository
 
 1. Ensure you have Git installed:
 
@@ -77,7 +80,28 @@ The AWS CLI tool will allow you to interact with AWS services from the command l
 	git clone https://github.com/YOUR-USERNAME/YOUR-REPO-NAME.git
 	```
 
-## Step 5: Deploy the Application
+	After cloning the repository, you'll find the following structure:
+	
+	```
+	ar-sre-kata/
+	├── modules/
+	│   ├── container_service/
+	│   ├── networking/
+	│   └── serverless/
+	├── main.tf
+	├── variables.tf
+	├── outputs.tf
+	├── providers.tf
+	└── README.md
+	```
+	
+	- `modules/`: Contains Terraform modules for different components of the infrastructure.
+	- `main.tf`: The main Terraform configuration file that calls the modules.
+	- `variables.tf`: Defines input variables for the Terraform configuration.
+	- `outputs.tf`: Specifies the outputs from the Terraform apply process.
+	- `providers.tf`: Configures the required providers for the project.
+
+## Step 5: Deploy and test the applications
 
 1. Navigate to the cloned repository directory:
 
@@ -99,9 +123,9 @@ The AWS CLI tool will allow you to interact with AWS services from the command l
 
 4. Confirm the action when prompted by typing `yes`.
 
-### Task-1: Container Service with Redis and Web Application
+### Task-1: Container service with Redis and Web application
 
-As part of Task-1, we've implemented a container service using AWS ECS (Elastic Container Service). Here's what has been done:
+As part of Task-1, we've implemented a container service using AWS ECS (Elastic Container Service). Here's what we've done:
 
 1. Created an ECS cluster to manage our containers.
 2. Deployed two containers:
@@ -123,7 +147,8 @@ To test the deployed application:
 	```
 
 2. Open a web browser and navigate to the ALB DNS name. Click through the insecure warning since we have not implemented HTTPS for this demonstration.
-3. You should see a simple visitor counter application. Refresh the page to see the counter increment.
+
+	Note: The ALB will display a 503 error until services have initialized. You can watch the initialization process in the `Tasks` view under the ECS service.
 
 To view the ECS service details and logs:
 
@@ -185,6 +210,26 @@ terraform state list | grep SEARCH_TERM
 terraform state rm RESOURCE1 RESOURCE2 ... RESOURCEn
 ```
 
+## Troubleshooting
+
+If you encounter issues during deployment or testing, try the following:
+
+1. Ensure your AWS credentials are correctly configured and have the necessary permissions.
+2. Check the CloudWatch logs for each service to identify any runtime errors.
+3. If a Terraform apply fails, run `terraform plan` to see what changes are pending and why they might be failing.
+4. For networking issues, verify that security groups and VPC settings are correctly configured.
+
+If problems persist, please refer to the AWS documentation or reach out to the contact listed at the top of this document.
+
+## Cleaning Up
+
+To avoid unnecessary AWS charges, remember to destroy your infrastructure when you're done testing:
+
+1. Run `terraform destroy` and confirm when prompted.
+2. Double-check the AWS Console to ensure all resources have been properly removed.
+3. Monitor your AWS billing dashboard for any unexpected charges.
+
 ---
 
+## Conclusion
 You have now successfully prepared your Mac, cloned the repository, and deployed the application using Terraform. If you encounter any issues or need further assistance, please reach out to the contact listed at the top of this document.
