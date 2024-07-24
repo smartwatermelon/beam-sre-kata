@@ -1,4 +1,6 @@
 # ./providers.tf
+
+# Specify required providers and their versions
 terraform {
   required_providers {
     aws = {
@@ -7,6 +9,7 @@ terraform {
   }
 }
 
+# Configure the AWS provider
 provider "aws" {
-  region = "us-east-2"
+  region = "us-east-2"  # Specify the AWS region as per project requirements
 }
