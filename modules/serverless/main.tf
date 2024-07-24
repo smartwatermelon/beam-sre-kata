@@ -1,7 +1,7 @@
 # ./modules/serverless/main.tf
 
-resource "random_id" "suffix" {
-  byte_length = 8
+resource "terraform_data" "random_suffix" {
+  input = formatdate("YYYYMMDDhhmmss", timestamp())
 }
 
 # Create a null resource to install gems
@@ -43,7 +43,7 @@ resource "null_resource" "run_tests" {
 
 # IAM role for Lambda execution
 resource "aws_iam_role" "ar_lambda_role" {
-  name = "AR-LambdaExecutionRole-${random_id.suffix.hex}"
+  name = "AR-LambdaExecutionRole-${terraform_data.random_suffix.output}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
