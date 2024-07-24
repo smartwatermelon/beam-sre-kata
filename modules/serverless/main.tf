@@ -24,6 +24,19 @@ data "archive_file" "lambda_zip" {
   depends_on  = [null_resource.install_gems]
 }
 
+# Run tests
+resource "null_resource" "run_tests" {
+  triggers = {
+    lambda_code = data.archive_file.lambda_zip.output_base64sha256
+  }
+
+  provisioner "local-exec" {
+    command = "cd ${path.module}/lambda && ruby test_lambda.rb"
+  }
+
+  depends_on = [data.archive_file.lambda_zip]
+}
+
 # IAM role for Lambda execution
 resource "aws_iam_role" "ar_lambda_role" {
   name = "AR-LambdaExecutionRole"
@@ -66,6 +79,7 @@ resource "aws_lambda_function" "ar_test_runner" {
   }
 
   tags = var.tags
+  depends_on = [null_resource.run_tests]
 }
 
 # Brewery Lambda function resource
@@ -84,6 +98,7 @@ resource "aws_lambda_function" "ar_brewery_function" {
   }
 
   tags = var.tags
+  depends_on = [null_resource.run_tests]
 }
 
 # CloudWatch Log Group for Lambda logs
@@ -114,5 +129,3 @@ resource "aws_iam_role_policy" "eventbridge_permissions" {
     ]
   })
 }
-
-# EventBridge resources are still commented out due to IAM user permissions

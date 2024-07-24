@@ -1,12 +1,9 @@
 # modules/serverless/lambda/test_lambda.rb
 require 'minitest/autorun'
+require 'json'
 require_relative 'index'
 
 class TestLambda < Minitest::Test
-  def test_hello_world
-    assert_equal "Hello, World!", "Hello, World!"
-  end
-
   def test_format_brewery_data
     breweries = [
       {'name' => 'Brewery B', 'street' => '123 Main St', 'phone' => '123-456-7890'},
