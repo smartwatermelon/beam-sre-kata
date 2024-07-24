@@ -11,6 +11,20 @@ This SRE Kata Task demonstrates the implementation of a containerized web applic
 - Homebrew (package manager for macOS)
 - GitHub account with access to the private repository
 
+## Software Versions
+
+This project primarily relies on default versions provided by Terraform and AWS services to ensure compatibility and ease of maintenance. We use Terraform 1.0 or later, which automatically selects appropriate provider versions. For AWS services, we allow the use of default, up-to-date versions managed by AWS. Specific version notes:
+
+- Terraform: 1.0 or later (latest version recommended)
+- AWS Provider: Latest version compatible with used Terraform version
+- ECS: Latest available Amazon ECS-Optimized Amazon Linux 2 AMI
+- Lambda Runtime: Ruby 3.3
+- Container Images:
+  - Web Application: `beamdental/sre-kata-app` (latest)
+  - Redis: `redis:latest`
+
+While we don't pin most versions explicitly, this approach allows for easier updates and maintenance. In a production environment, you might consider specifying exact versions for stricter control and reproducibility.
+
 ## Step 1: Install Homebrew
 
 [Homebrew](https://brew.sh/) is a package manager for macOS. If you don't have it installed, open your Terminal and run the following command:
@@ -171,7 +185,7 @@ To view the ECS service details and logs:
 
 As part of Task-3, we've implemented a serverless function that fetches brewery data from the [OpenBreweryDB](https://www.openbrewerydb.org) API. Here's what we've done:
 
-1. Created a Lambda function (`AR-BreweryParser`) that fetches brewery data for Columbus, Ohio.
+1. Created a Lambda function (`AR-BreweryParser`) that fetches brewery data for Columbus, Ohio (39°57'28.7"N, 82°59'50.5"W).
 2. Implemented logging to CloudWatch, which outputs the brewery data in JSON format.
 3. Created a test runner (`AR-TestRunner`) to verify the functionality.
 4. Integrated unit tests that run during the Terraform apply process.
@@ -249,6 +263,12 @@ Remember, never hard-code passwords or other sensitive information directly in y
 ## Troubleshooting
 
 If you encounter issues during deployment or testing, try the following:
+
+1. Get the current Terraform state and outputs.
+
+	```bash
+	terraform refresh && terraform output
+	```
 
 1. Ensure your AWS credentials are correctly configured and have the necessary permissions.
 2. Check the CloudWatch logs for each service to identify any runtime errors.
