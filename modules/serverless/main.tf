@@ -1,10 +1,11 @@
 # ./modules/serverless/main.tf
 
+# Generate a random suffix for resource names
 resource "terraform_data" "random_suffix" {
   input = formatdate("YYYYMMDDhhmmss", timestamp())
 }
 
-# Create a null resource to install gems
+# Install gems for Lambda function
 resource "null_resource" "install_gems" {
   triggers = {
     always_run = "${timestamp()}"
@@ -20,7 +21,7 @@ resource "null_resource" "install_gems" {
   }
 }
 
-# Resource to create a ZIP file from our Lambda function code
+# Create a ZIP file from our Lambda function code
 data "archive_file" "lambda_zip" {
   type        = "zip"
   source_dir  = "${path.module}/lambda"
@@ -28,7 +29,7 @@ data "archive_file" "lambda_zip" {
   depends_on  = [null_resource.install_gems]
 }
 
-# Run tests
+# Run tests for Lambda function
 resource "null_resource" "run_tests" {
   triggers = {
     lambda_code = data.archive_file.lambda_zip.output_base64sha256
@@ -59,13 +60,13 @@ resource "aws_iam_role" "ar_lambda_role" {
   tags = var.tags
 }
 
-# IAM policy for Lambda basic execution
+# Attach basic execution policy to Lambda role
 resource "aws_iam_role_policy_attachment" "ar_lambda_basic_execution" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
   role       = aws_iam_role.ar_lambda_role.name
 }
 
-# Test Runner Lambda function
+# Lambda function for test runner
 resource "aws_lambda_function" "ar_test_runner" {
   filename         = data.archive_file.lambda_zip.output_path
   function_name    = "AR-TestRunner"
@@ -73,8 +74,8 @@ resource "aws_lambda_function" "ar_test_runner" {
   handler          = "test_runner.handler"
   runtime          = "ruby3.3"
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
-  timeout          = 30  # Increase timeout to 30 seconds
-  memory_size      = 256 # Increase memory to 256 MB
+  timeout          = 30
+  memory_size      = 256
 
   environment {
     variables = {
@@ -86,7 +87,7 @@ resource "aws_lambda_function" "ar_test_runner" {
   depends_on = [null_resource.run_tests]
 }
 
-# Brewery Lambda function resource
+# Lambda function for brewery parser
 resource "aws_lambda_function" "ar_brewery_function" {
   filename         = data.archive_file.lambda_zip.output_path
   function_name    = "AR-BreweryParser"
