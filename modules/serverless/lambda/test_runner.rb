@@ -1,24 +1,25 @@
-# ./modules/serverless/lambda/test_runner.rb
-
+# modules/serverless/lambda/test_runner.rb
 require 'json'
 require_relative 'test_lambda'
 
 def handler(event:, context:)
   puts "Starting tests..."
   
-  test_output = StringIO.new
-  Minitest.reporter = Minitest::SummaryReporter.new(test_output)
-  test_result = Minitest.run
+  output = StringIO.new
+  Minitest.reporter = Minitest::SummaryReporter.new(output)
+  result = Minitest.run
 
-  puts "Tests completed. Output:"
-  puts test_output.string
+  puts output.string
+  
+  message = result ? "All tests passed successfully" : "Some tests failed"
+  puts message
 
   {
-    statusCode: test_result ? 200 : 500,
+    statusCode: result ? 200 : 500,
     body: JSON.generate({
-      success: test_result,
-      message: test_result ? "All tests passed" : "Some tests failed",
-      details: test_output.string
+      success: result,
+      message: message,
+      details: output.string
     })
   }
 end
