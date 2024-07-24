@@ -1,5 +1,9 @@
 # ./modules/serverless/main.tf
 
+resource "random_id" "suffix" {
+  byte_length = 8
+}
+
 # Create a null resource to install gems
 resource "null_resource" "install_gems" {
   triggers = {
@@ -39,7 +43,7 @@ resource "null_resource" "run_tests" {
 
 # IAM role for Lambda execution
 resource "aws_iam_role" "ar_lambda_role" {
-  name = "AR-LambdaExecutionRole"
+  name = "AR-LambdaExecutionRole-${random_id.suffix.hex}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
