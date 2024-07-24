@@ -1,47 +1,24 @@
 # ./modules/serverless/lambda/test_runner.rb
 
-puts "Starting test_runner.rb"
-puts "Ruby version: #{RUBY_VERSION}"
-puts "Current directory: #{Dir.pwd}"
-puts "Contents of current directory: #{Dir.entries('.')}"
-puts "Contents of /var/task: #{Dir.entries('/var/task')}"
-puts "Contents of /var/task/vendor/bundle: #{Dir.entries('/var/task/vendor/bundle')}"
-puts "ENV variables: #{ENV.to_h}"
-
-require 'bundler/setup'
-require 'minitest/autorun'
+require 'json'
 require_relative 'test_lambda'
 
 def handler(event:, context:)
-  puts "Handler started"
-  puts "BUNDLE_GEMFILE: #{ENV['BUNDLE_GEMFILE']}"
-  puts "GEM_PATH: #{ENV['GEM_PATH']}"
-  puts "LOAD_PATH: #{$LOAD_PATH}"
-  puts "Bundler.bundle_path: #{Bundler.bundle_path}"
-  puts "Installed gems: #{Gem.loaded_specs.keys}"
+  puts "Starting tests..."
+  
+  test_output = StringIO.new
+  Minitest.reporter = Minitest::SummaryReporter.new(test_output)
+  test_result = Minitest.run
 
-  begin
-    test_result = TestLambda.run_tests
-    puts JSON.generate(test_result)
+  puts "Tests completed. Output:"
+  puts test_output.string
 
-    if test_result[:success]
-      {
-        statusCode: 200,
-        body: JSON.generate(test_result)
-      }
-    else
-      {
-        statusCode: 500,
-        body: JSON.generate(test_result)
-      }
-    end
-  rescue => e
-    puts "Error: #{e.message}"
-    puts e.backtrace.join("\n")
-    
-    {
-      statusCode: 500,
-      body: JSON.generate({ error: e.message, backtrace: e.backtrace })
-    }
-  end
+  {
+    statusCode: test_result ? 200 : 500,
+    body: JSON.generate({
+      success: test_result,
+      message: test_result ? "All tests passed" : "Some tests failed",
+      details: test_output.string
+    })
+  }
 end
