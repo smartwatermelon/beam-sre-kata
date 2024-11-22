@@ -24,22 +24,24 @@ resource "null_resource" "install_gems" {
 # Create a ZIP file from our Lambda function code
 data "archive_file" "lambda_zip" {
   type        = "zip"
-  source_dir  = "${path.module}/lambda"
-  output_path = "${path.module}/lambda_function.zip"
-  depends_on  = [null_resource.install_gems]
+  source_file = "${path.module}/db_init_lambda.rb"
+  output_path = "${path.module}/db_init_lambda.zip"
 }
 
-# Run tests for Lambda function
-resource "null_resource" "run_tests" {
-  triggers = {
-    lambda_code = data.archive_file.lambda_zip.output_base64sha256
-  }
+# Create a Lambda function to initialize the database
+resource "aws_lambda_function" "db_init" {
+  filename         = data.archive_file.lambda_zip.output_path
+  function_name    = "${var.project_name}-${var.environment}-db-init"
+  role             = aws_iam_role.lambda_role.arn
+  handler          = "db_init_lambda.handler"
+  runtime          = "ruby3.3"
+  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
 
-  provisioner "local-exec" {
-    command = "cd ${path.module}/lambda && ruby test_lambda.rb"
+  environment {
+    variables = {
+      DB_SECRET_ARN = aws_secretsmanager_secret.db_credentials.arn
+    }
   }
-
-  depends_on = [data.archive_file.lambda_zip]
 }
 
 # IAM role for Lambda execution
